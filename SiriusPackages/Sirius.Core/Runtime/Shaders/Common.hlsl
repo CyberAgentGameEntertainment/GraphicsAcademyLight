@@ -1,0 +1,15 @@
+﻿#ifndef _SIRIUS_CORE_COMMON_HLSL_
+#define _SIRIUS_CORE_COMMON_HLSL_
+
+#define SIRIUS_CAT(a, b) a ## b
+#define SIRIUS_PREFIX1(a) SIRIUS_CAT(_SIRIUS, a)
+#define SIRIUS_PREFIX2(a, b) SIRIUS_PREFIX1(SIRIUS_CAT(a, b))
+#define SIRIUS_PREFIX3(a, b, c) SIRIUS_PREFIX2(a, SIRIUS_CAT(b, c))
+
+#if defined(USE_FORWARD_PLUS) || defined(USE_CLUSTER_LIGHT_LOOP)
+    #define SIRIUS_USE_CLUSTERED_LIGHT_LOOP 1
+#else
+    #define SIRIUS_USE_CLUSTERED_LIGHT_LOOP 0
+#endif
+
+#endif

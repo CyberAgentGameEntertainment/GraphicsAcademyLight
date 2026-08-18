@@ -1,0 +1,2 @@
+Assets/**/*.png filter=lfs diff=lfs merge=lfs -text
+Assets/**/*.exr filter=lfs diff=lfs merge=lfs -text
