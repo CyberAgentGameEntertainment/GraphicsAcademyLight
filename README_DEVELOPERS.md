@@ -245,6 +245,56 @@ Phase 完了時に `/clear` を **軽く推奨** します（強制ではない�
 - Phase 詳細: [.claude/skills/ct-ai-dlc/references/](.claude/skills/ct-ai-dlc/references/)
 - 中間成果物: [docs/ai-dlc/README.md](docs/ai-dlc/README.md)
 
+### Codexレビュー自動対応（GitHub Actions）
+
+OpenAI Codex（ChatGPT の GitHub 連携 = `chatgpt-codex-connector[bot]`）の自動コードレビューが付いた PR に対し、Claude が各指摘を解析して**対応案をレビュースレッドへ返信**するワークフローです。返信には GitHub ネイティブの `suggestion` ブロックを使うため、開発者は内容を確認して「**Commit suggestion**」を押すだけで PR ブランチへ反映できます。
+
+> SIRIUS本体の同名ワークフロー（`docs/ai-dlc/2026-07-15-codex-auto-review-migration/` で設計）を参考に移植したものです。
+
+#### 前提: Codexレビューの有効化（コード外設定）
+
+- ChatGPT の GitHub 連携（`chatgpt-codex-connector`）をこのリポジトリにインストールし、アクセスを許可する（GitHub org の管理者作業）
+- ChatGPT の Codex settings でこのリポジトリの Code review を有効化し、**Automatic reviews を ON** にする（OFF の場合は PR コメントで `@codex review` とメンションした PR のみレビューされる）
+- レビュー方針はリポジトリ直下の [AGENTS.md](AGENTS.md) の「Review guidelines」セクションでカスタマイズできる（`.meta` 指摘除外・日本語指摘などを指定済み）
+
+#### 仕組み
+
+- トリガー: `.github/workflows/codex-review-respond.yml`
+  - `pull_request_review: [submitted]`（Codex bot がレビューを submit したとき）
+  - `workflow_dispatch`（`pr_number` 入力でドライラン）
+- 処理本体: `.github/scripts/codex-respond.mjs`（Node から Claude Code CLI を `-p` ヘッドレス実行）
+- 認証: Claude Code CLI を **サブスク OAuth トークン**（`claude setup-token` で発行・`CLAUDE_CODE_OAUTH_TOKEN`）で認証。従量課金の API キーは使わない（後述）
+- スクリプト取得: ワークフローは checkout を持たない（後述の承認ゲート）ため、`codex-respond.mjs` を workflow と同一 commit（`github.workflow_sha`）から `gh api` で取得し `/tmp` で実行する
+- 起動条件: Codex bot（`user.type == "Bot"` かつ login に `codex-connector` を含む）由来のレビューのみ。人間レビュー・fork PR・close 済み PR は対象外
+- 各指摘への対応:
+  - **suggestion**: 単一ファイル・行アンカー範囲内で直せる → `suggestion` ブロック付きで返信（人間が「Commit suggestion」で適用）
+  - **manual**: 複数ファイル/範囲外に及ぶ → 参考差分を提示し手動適用を促す
+  - **defer**: 誤検知・対応不要 → 見送り理由を返信
+  - **`.meta` 指摘**: 指摘が `.meta` ファイルに紐づく場合は CLI を呼ばず **自動で defer 固定**（`.meta` は手編集対象外のため）。「手編集対象外」である旨を返信に明示する
+  - レビュー総評（行アンカー無し）→ PR 全体コメントとして対応方針を投稿
+- 冪等性: 返信に `<!-- claude-codex-respond:{id} -->` マーカーを埋め込み、再実行時の二重返信を防止。Codex レビューが無い PR では CLI を呼ばず正常終了
+
+#### 承認ゲート（重要）
+
+このワークフローは **checkout も `git push` も一切持ちません**。修正の PR ブランチへの反映は、開発者が「Commit suggestion」を押すこと（= GitHub による人間操作のコミット）でのみ発生します。ワークフロー自身に push 経路が存在しないため、**承認前にコードが push される経路が構造的に存在しません**。
+
+#### 必要な Secrets
+
+| Secret | 用途 | 登録 |
+|---|---|---|
+| `CLAUDE_CODE_OAUTH_TOKEN` | Claude Code CLI のサブスク OAuth 認証 | **要登録**（下記手順で発行） |
+
+コメント投稿には既定の `GITHUB_TOKEN`（`pull-requests: write` 権限）を使用します。SIRIUS本体では専用の GitHub App トークンを使っていますが、このリポジトリには同等の App 基盤が無いため簡略化しています（コメントの表示名が `sirius-github-app[bot]` ではなく `github-actions[bot]` になる点のみ差異）。
+
+`CLAUDE_CODE_OAUTH_TOKEN` は、Claude サブスク（Pro / Max）でログイン済みのローカル環境で `claude setup-token` を実行して発行した長期トークンを登録します（CLI は同名の環境変数から自動認証します）。
+
+```bash
+claude setup-token                                  # ブラウザ認証 → 長期トークンが表示される
+gh secret set CLAUDE_CODE_OAUTH_TOKEN -R CyberAgentGameEntertainment/GraphicsAcademyLight   # 表示されたトークンを貼り付け
+```
+
+モデルは CLI 既定（サブスクの既定モデル）を使い、`CLAUDE_MODEL` 環境変数で上書きできます。
+
 ### PR レビュー依頼について
 
 Phase 4 (Review) では、GitHub PR にレビュアーを設定し、チームで使っている連絡手段でレビュー依頼を送ります。
