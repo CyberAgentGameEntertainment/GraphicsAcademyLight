@@ -260,7 +260,7 @@ Phase 4 (Review) では、GitHub PR にレビュアーを設定し、チーム�
 | スキル | 対象パッケージ | 主な用途 |
 |--------|--------------|---------|
 | `/ct-pkg-sirius-core` | Sirius.Core | 共通hlsl（ScreenSpaceUtil/CoreUtil等）、共通基盤の変更 |
-| `/ct-pkg-sirius-postprocessing` | Sirius.PostProcessing | ポストエフェクト（DirectionalBlur/RadialBlur/RotationBlur/HeatDistortion/GodRay）の変更 |
+| `/ct-pkg-sirius-postprocessing` | Sirius.PostProcessing | ポストエフェクト（DirectionalBlur/RadialBlur/RotationBlur/HeatDistortion）の変更 |
 | `/ct-pkg-sirius-devsupport` | Sirius.DevSupport | リグレッションテスト、シェーダー性能計測、GPUプロファイラの変更 |
 
 各パッケージには `CLAUDE.md`（静的なルール・制約）も配置されており、パッケージ内のファイルを編集する際に自動で読み込まれます。

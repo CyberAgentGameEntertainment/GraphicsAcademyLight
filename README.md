@@ -280,9 +280,8 @@ AIが自分で走るときに、「ここから先は踏んではいけない」
 | 3 | **【ワーク②】Radial Blur の最適化** | ハンズオン |
 | 4 | **【ワーク③】新機能の実装（RotationBlur）** | ハンズオン |
 | 5 | **【ワーク④】陽炎（HeatDistortion）をゼロから実装** | ハンズオン（本物のAI-DLC） |
-| 6 | **【ワーク⑤】光芒（GodRay）をゼロから実装** | ハンズオン（本物のAI-DLC） |
 
-ワーク①〜③と、ワーク④〜⑤では、進め方が違います。ワーク①〜③は、疑似的なフロー（`/workshop-ai-dlc`）で、わざと仕込んだ不具合を見つけて直す練習です。ワーク④〜⑤は、私たちが日々の開発で使っている本物のフロー（`/ct-ai-dlc`）で、要件の起票から実装まで、エフェクトを1本まるごと新規に作ります。こちらには仕込みの罠はありません。AIが書いたコードが正しいかどうかを、あなた自身が3つの防衛線で確かめます。
+ワーク①〜③と、ワーク④では、進め方が違います。ワーク①〜③は、疑似的なフロー（`/workshop-ai-dlc`）で、わざと仕込んだ不具合を見つけて直す練習です。ワーク④は、私たちが日々の開発で使っている本物のフロー（`/ct-ai-dlc`）で、要件の起票から実装まで、エフェクトを1本まるごと新規に作ります。こちらには仕込みの罠はありません。AIが書いたコードが正しいかどうかを、あなた自身が3つの防衛線で確かめます。
 
 ワーク①〜③は、次の流れで進みます。
 
@@ -561,94 +560,5 @@ AIから提示された確認事項を進めて、コミット->PR作成まで�
 
 ![alt text](figs/13.png)
 
-#### 
 ---
 
-### 4.7 【ワーク⑤】光芒（GodRay）をゼロから実装
-![alt text](figs/07.png)
-
-最後のワークは、複数のパスをつないで作る、いちばん難しいエフェクトです。
-
-#### エフェクトの概要
-
-**光芒（GodRay、薄明光線）** は、雲の切れ間や木々のすき間から、光が筋になって差し込んで見える現象です。逆光のシーンに、強い印象を与えます。
-
-#### ワーク②の放射状ブラーを、また使う
-
-光芒の心臓部は、光源に向かってかける放射状ブラーです。ワーク②で最適化した RadialBlur の考え方を、そのまま部品として使えます。ただし1回のブラーで終わりではなく、いくつかのパスをつないで作ります。
-
-1. 明るいところだけを抜き出す（二値化）
-2. 光源の位置へ向かって、放射状にブラーをかける（ガウス重み付き。さらに前フレームの結果も混ぜて、少ないサンプルでも滑らかにする＝テンポラル）
-3. 元の画面に合成する（乗算・加算・スクリーンから選ぶ）
-
-#### 難しさの肝
-
-> 1. **光源をどこに向かってブラーするか**
->    主光源の向きを、画面上のどの点に投影するかを計算します（ワールド座標からスクリーン座標への投影）。この計算は `GodRayHelper` に用意してあります。
-> 2. **パスをつなぐ**
->    RenderGraph で、二値化 → 放射状ブラー → 合成を順につなぎます。中間結果のテクスチャをどう受け渡すかが要点です。
-> 3. **テンポラル**
->    前フレームの結果を、前フレームのVP行列で今フレームに再投影して混ぜます。残像（ゴースト）が出ないよう、混ぜ具合を調整します。この土台となる履歴バッファは `GodRayBlurHistory` に用意してあります。
-
-#### 仕様のポイント（レビューで注目してほしいところ）
-
-> - **ブレンドモード**：乗算・加算・スクリーンで、見た目が大きく変わります。加算は明るく飛びやすく、乗算は落ち着きます。狙いに合っているか確認します。
-> - **サンプル数とコスト**：サンプルを増やすほど滑らかになりますが、そのぶん重くなります。テンポラルでどこまで補えるかを考えます。
-> - **テンポラルの残像**：カメラが速く動いたとき、光の筋が尾を引いていないか確認します。
-
-#### プロンプト（このワークを始める）
-
-```
-/ct-ai-dlc 光芒（GodRay）を実装
-```
-
-> あらかじめ用意してあるもの：光源をスクリーンに投影する `GodRayHelper`、テンポラルの履歴バッファ `GodRayBlurHistory`、明るい光源と遮蔽物のあるデモシーン、赤を返すだけの空シェーダー2枚。あなたが作るのは Volume・RenderPass（マルチパスの制御）・シェーダーの本体です。
-
-<details>
-<summary>確認のヒント（詰まったら開く）</summary>
-
-- 光源の位置と、光の筋が集まる中心が合っているか
-- ブレンドモードを切り替えて、狙いの見た目になるものを選ぶ
-- テンポラルは数フレーム回すと安定します。カメラを止めた状態で残像が消えるか
-- Mali Offline Compiler で、サンプル数ごとのコストを見る
-- 答え合わせ: [`docs/workshop/answers/GodRay/`](docs/workshop/answers/GodRay/)
-
-</details>
-
----
-
-#### 付録：ワークのあとで元に戻す
-
-各ワークで変更したシェーダーは、次のワークに進む前に元へ戻せます。
-
-```bash
-# ワーク① Directional Blur を元に戻す
-git checkout HEAD -- SiriusPackages/Sirius.PostProcessing/Runtime/Shaders/DirectionalBlur.shader
-
-# ワーク② Radial Blur を元の float 版に戻す
-git checkout HEAD -- SiriusPackages/Sirius.PostProcessing/Runtime/Shaders/RadialBlur.shader
-
-# ワーク③ RotationBlur を赤スタブに戻す（生成した C# の削除は skill の Phase 6 の手順を参照）
-git checkout HEAD -- SiriusPackages/Sirius.PostProcessing/Runtime/Shaders/RotationBlur.shader
-
-# ワーク④ 陽炎（HeatDistortion）を赤スタブに戻し、生成した C# を削除する
-git checkout HEAD -- SiriusPackages/Sirius.PostProcessing/Runtime/Shaders/HeatDistortion.shader
-git rm SiriusPackages/Sirius.PostProcessing/Runtime/Scripts/Volumes/HeatDistortionVolume.cs
-git rm SiriusPackages/Sirius.PostProcessing/Runtime/Scripts/Features/Passes/HeatDistortionPass.cs
-git checkout HEAD -- SiriusPackages/Sirius.PostProcessing/Runtime/Scripts/Features/SiriusPostProcessingFeature.cs
-
-# ワーク⑤ 光芒（GodRay）を赤スタブに戻し、生成した C# を削除する（GodRayHelper / GodRayBlurHistory は用意済みのため残す）
-git checkout HEAD -- SiriusPackages/Sirius.PostProcessing/Runtime/Shaders/GodRay/Binarization.shader SiriusPackages/Sirius.PostProcessing/Runtime/Shaders/GodRay/GodRayRadialBlur.shader
-git rm SiriusPackages/Sirius.PostProcessing/Runtime/Scripts/Volumes/GodRayVolume.cs SiriusPackages/Sirius.PostProcessing/Runtime/Scripts/Features/Passes/GodRayRenderPass.cs
-git checkout HEAD -- SiriusPackages/Sirius.PostProcessing/Runtime/Scripts/Features/SiriusPostProcessingFeature.cs
-```
-
----
-
-#### 参考リンク
-
-- 座学のくわしい版： [`docs/workshop/01_intro_ai_dlc.md`](docs/workshop/01_intro_ai_dlc.md)
-- 各ワークの答え： [`docs/workshop/answers/`](docs/workshop/answers/)
-- ワークショップ進行スキル： [`.claude/skills/workshop-ai-dlc/SKILL.md`](.claude/skills/workshop-ai-dlc/SKILL.md)
-
-このドキュメントが、みなさんがAIと一緒に開発していくときの一助になれば幸いです。

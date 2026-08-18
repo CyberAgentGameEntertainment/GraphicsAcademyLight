@@ -8,5 +8,3 @@ Assets/Demo/Common/Bistro_v5_2/Textures/*.dds filter=lfs diff=lfs merge=lfs -tex
 Assets/Demo/Common/Bistro_v5_2/Textures/*.tga filter=lfs diff=lfs merge=lfs -text
 Assets/Demo/Character_Environment_VAT/Models/brkC.fbx filter=lfs diff=lfs merge=lfs -text
 Assets/Demo/Character_Environment_VAT/Models/vat_broken_bldg_mesh.fbx filter=lfs diff=lfs merge=lfs -text
-Assets/Demo/Workshop_GodRay/Terrain/*.asset filter=lfs diff=lfs merge=lfs -text
-Assets/Demo/Workshop_GodRay/**/*.png filter=lfs diff=lfs merge=lfs -text

@@ -24,9 +24,9 @@ hlsl 側は URP の Universal / Core 両方のシェーダーライブラリを 
 
 | ファイル | 役割 | 主な利用先 |
 |---|---|---|
-| `Common.hlsl` | `SIRIUS_PREFIX*` マクロ、`SIRIUS_USE_CLUSTERED_LIGHT_LOOP` 判定 | GodRay の Skybox シェーダー、ワーク④⑤ |
-| `CoreUtil.hlsl` | `pow2`〜`pow8` / `powFast` / `acosFast` / `Panner` / `RotateAboutAxis` などのユーティリティ | ワーク⑤（GodRayRadialBlur） |
-| `DeclareDepthTexture.hlsl` | `SampleSceneDepth` / `LoadSceneDepth` の Unity バージョン差異吸収 | `CoreUtil.hlsl`、ワーク⑤（Binarization） |
+| `Common.hlsl` | `SIRIUS_PREFIX*` マクロ、`SIRIUS_USE_CLUSTERED_LIGHT_LOOP` 判定 | ワーク④ |
+| `CoreUtil.hlsl` | `pow2`〜`pow8` / `powFast` / `acosFast` / `Panner` / `RotateAboutAxis` などのユーティリティ | （現在参照ワークなし。共通ユーティリティとして提供） |
+| `DeclareDepthTexture.hlsl` | `SampleSceneDepth` / `LoadSceneDepth` の Unity バージョン差異吸収 | `CoreUtil.hlsl` |
 | `ScreenSpaceUtil.hlsl` | 深度からのワールド/ビュー座標復元（`GetWorldPosition` / `GetCameraDistance`）、Framebuffer Fetch 抽象化 | ワーク④（HeatDistortion） |
 
 `ScreenSpaceUtil.hlsl` はワーク④の**足場**として提供している。参加者は距離フェード実装時にこれを include する
@@ -36,7 +36,7 @@ hlsl 側は URP の Universal / Core 両方のシェーダーライブラリを 
 
 | ファイル | 役割 |
 |---|---|
-| `CTRenderGrapProfilingScope.cs` | `AddUnsafePass` を使う RenderGraph 用プロファイリングスコープ。URP の `RenderGraphProfilingScope` が `AddRenderPass` 前提で使えないため自前実装。ワーク⑤の `GodRayRenderPass` が利用 |
+| `CTRenderGrapProfilingScope.cs` | `AddUnsafePass` を使う RenderGraph 用プロファイリングスコープ。URP の `RenderGraphProfilingScope` が `AddRenderPass` 前提で使えないため自前実装。（現在参照ワークなし） |
 | `GlobalSettings.cs` | `DevelopmentMode` のみ。`CTRenderGraphProfilingScope` が参照する |
 | `SiriusIgnorer.cs` | カメラ単位でポストエフェクトの実行を除外するコンポーネント。`SiriusPostProcessingFeature` が参照 |
 
