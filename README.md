@@ -7,8 +7,6 @@
 ワークショップ本編（4章）を始める前に、以下のセットアップを済ませておいてください。
 各ソフトウェアをインストールするためのコマンドは、WindowsはPowerShell、MacはTerminalを利用してください。
 
-また、0.1～0.7までのセットアップは必須になりますが、0.8～0.9のセットアップは推奨となります。
-0.8～0.9のセットアップができていると、より深く自律駆動するAI開発体験が行えますが、0.7までのセットアップでもワークショップは実施可能です。
 
 ### 0.1 Git のインストール
 
@@ -59,17 +57,14 @@ Windows/Mac共通の手順です（3.のBuild Supportモジュールの選択の
    - **Mac**: iOS Build Support
    > このプロジェクトのビジュアルリグレッションテストは、`Tools > Sirius > Dev Support > Validate Mobile Target` によって、Windows環境ではビルドターゲットが強制的に **Android** に、macOS環境では **iOS** に切り替えられます。対応する Build Support が無いとワーク②・③のテストが実行できません。
 
-### 0.5 リポジトリのFork
+### 0.5 リポジトリのクローン
 
 このリポジトリは、講義が始まると公開されます。講義開始の際に作業時間を取るので、事前準備ではスキップしてください。
 
-このワークショップでは、最終的にみなさんにPRを作成してもらいます。そのため、リポジトリを直接cloneするのではなく、**自分のGitHubアカウントにForkしてから作業**してください。
-
-1. GitHub上で本リポジトリ（[CyberAgentGameEntertainment/GraphicsAcademyLight](https://github.com/CyberAgentGameEntertainment/GraphicsAcademyLight)）を開き、右上の **Fork** ボタンからフォークを作成します。![alt text](figs/16.png)
-2. フォークしたリポジトリを手元にクローンします（`<your-github-username>` は自分のGitHubアカウント名に置き換えてください）。
+ワーク①〜③はリポジトリを直接クローンするだけで進められます（PRの作成が必要なワーク④の直前に、Forkと再クローンの手順を案内します）。
 
 ```bash
-git clone https://github.com/<your-github-username>/GraphicsAcademyLight.git
+git clone https://github.com/CyberAgentGameEntertainment/GraphicsAcademyLight.git
 cd GraphicsAcademyLight
 ```
 
@@ -89,30 +84,7 @@ npm install -g @anthropic-ai/claude-code
 [Arm Developer](https://developer.arm.com/Tools%20and%20Software/Mali%20Offline%20Compiler) から、Mali Offline Compilerを含む **Arm Performance Studio** をダウンロード・インストールします。
 
 
-### 0.8 GitHub CLI のインストールと認証
-
-ワーク④でのPR作成やレビュー依頼に使います。インストール手順はWindows/Macで異なります。
-
-**Windows**
-
-```powershell
-winget install --id GitHub.cli
-```
-
-**Mac**
-
-```bash
-brew install gh
-```
-
-インストール後、認証を行います（Windows/Mac共通）。
-
-```bash
-gh auth login
-gh auth setup-git
-```
-
-### 0.9 uloopのセットアップ
+### 0.8 uloopのセットアップ
 
 Claude Code から Unity Editor を直接操作できるようにするためのセットアップです。Windows/Mac共通の手順です。
 
@@ -671,6 +643,32 @@ UnityでRotationBlurを確認できるようになったら、上の「仕様の
 このような技術的仕様はこれまでのシンプルなプロンプト`/ct-ai-dlc 陽炎（HeatDistortion）を実装`のような指示では決定することが難しいため、プロンプトで明確に指示を出すか、実装の計画自体をAI-DLCを利用して壁打ちして作っていく必要があります。
 今回はプロンプトで具体的な指示を出していきます。
 
+このワークでは最終的にPRを作成するため、始める前に以下の追加セットアップが必要です。
+
+#### step-0 Fork と GitHub CLI のセットアップ
+
+1. **リポジトリをFork**: GitHub上で本リポジトリ（[CyberAgentGameEntertainment/GraphicsAcademyLight](https://github.com/CyberAgentGameEntertainment/GraphicsAcademyLight)）を開き、右上の **Fork** ボタンからフォークを作成します。![alt text](figs/16.png)
+2. **Fork先を改めてクローン**: ワーク①〜③で使っていたフォルダとは別の場所に、Fork先をクローンします（`<your-github-username>` は自分のGitHubアカウント名に置き換えてください）。
+   ```bash
+   git clone https://github.com/<your-github-username>/GraphicsAcademyLight.git
+   cd GraphicsAcademyLight
+   ```
+3. **GitHub CLI のインストールと認証**: PRの作成やレビュー依頼、`git push` の認証に使います。インストール手順はWindows/Macで異なります。
+
+   **Windows**
+   ```powershell
+   winget install --id GitHub.cli
+   ```
+   **Mac**
+   ```bash
+   brew install gh
+   ```
+
+   インストール後、認証を行います（Windows/Mac共通）。
+   ```bash
+   gh auth login
+   gh auth setup-git
+   ```
 
 #### step-1 プロンプト（このワークを始める）
 
