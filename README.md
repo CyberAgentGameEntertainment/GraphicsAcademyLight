@@ -7,8 +7,8 @@
 ワークショップ本編（4章）を始める前に、以下のセットアップを済ませておいてください。
 各ソフトウェアをインストールするためのコマンドは、WindowsはPowerShell、MacはTerminalを利用してください。
 
-また、0.1～0.6までのセットアップは必須になりますが、0.7～0.8のセットアップは推奨となります。
-0.7～0.8のセットアップができていると、より深く自律駆動するAI開発体験が行えますが、0.6までのセットアップでもワークショップは実施可能です。
+また、0.1～0.7までのセットアップは必須になりますが、0.8～0.9のセットアップは推奨となります。
+0.8～0.9のセットアップができていると、より深く自律駆動するAI開発体験が行えますが、0.7までのセットアップでもワークショップは実施可能です。
 
 ### 0.1 Git のインストール
 
@@ -26,7 +26,12 @@ xcode-select --install   # Xcode Command Line Toolsに同梱のGitを使う場�
 brew install git         # Homebrewで最新版を使う場合
 ```
 
-### 0.2 Node.js のインストール
+### 0.2 GitHubアカウントの作成
+
+まだGitHubアカウントを持っていない場合は、[GitHub](https://github.com/) にアクセスしてアカウントを作成してください。
+
+
+### 0.3 Node.js のインストール
 
 Claude Code・uloop CLI のインストールに必要です。**LTS版**を使用してください。
 
@@ -43,7 +48,7 @@ winget install OpenJS.NodeJS.LTS
 brew install node
 ```
 
-### 0.3 Unity のインストール
+### 0.4 Unity のインストール
 
 Windows/Mac共通の手順です（3.のBuild Supportモジュールの選択のみ異なります）。
 
@@ -54,22 +59,22 @@ Windows/Mac共通の手順です（3.のBuild Supportモジュールの選択の
    - **Mac**: iOS Build Support
    > このプロジェクトのビジュアルリグレッションテストは、`Tools > Sirius > Dev Support > Validate Mobile Target` によって、Windows環境ではビルドターゲットが強制的に **Android** に、macOS環境では **iOS** に切り替えられます。対応する Build Support が無いとワーク②・③のテストが実行できません。
 
-### 0.4 リポジトリのFork
+### 0.5 リポジトリのFork
 
 このリポジトリは、講義が始まると公開されます。講義開始の際に作業時間を取るので、事前準備ではスキップしてください。
 
 このワークショップでは、最終的にみなさんにPRを作成してもらいます。そのため、リポジトリを直接cloneするのではなく、**自分のGitHubアカウントにForkしてから作業**してください。
 
-1. GitHub上で本リポジトリ（[CyberAgentGameEntertainment/GraphicsAcademyLight](https://github.com/CyberAgentGameEntertainment/GraphicsAcademyLight)）を開き、右上の **Fork** ボタンからフォークを作成します。
+1. GitHub上で本リポジトリ（[CyberAgentGameEntertainment/GraphicsAcademyLight](https://github.com/CyberAgentGameEntertainment/GraphicsAcademyLight)）を開き、右上の **Fork** ボタンからフォークを作成します。![alt text](figs/16.png)
 2. フォークしたリポジトリを手元にクローンします（`<your-github-username>` は自分のGitHubアカウント名に置き換えてください）。
-  
+
 ```bash
-git clone git@github.com:<your-github-username>/GraphicsAcademyLight.git
+git clone https://github.com/<your-github-username>/GraphicsAcademyLight.git
 cd GraphicsAcademyLight
 ```
 
 
-### 0.5 Claude Code のインストールとログイン
+### 0.6 Claude Code のインストールとログイン
 
 Windows/Mac共通です。
 
@@ -80,11 +85,11 @@ npm install -g @anthropic-ai/claude-code
 > **よくあるエラー（Mac）**: `npm install -g` の実行時に実行権限不足の`npm error code EACCES`（`permission denied`）が出ることがあります。このあとの `claude` や `uloop-cli` のインストールでも同じエラーになるため、その場合はコマンドの先頭に `sudo` を付けて管理者権限で実行してください（例: `sudo npm install -g @anthropic-ai/claude-code`）。
 
 
-### 0.6 Mali Offline Compiler のインストール
+### 0.7 Mali Offline Compiler のインストール
 [Arm Developer](https://developer.arm.com/Tools%20and%20Software/Mali%20Offline%20Compiler) から、Mali Offline Compilerを含む **Arm Performance Studio** をダウンロード・インストールします。
 
 
-### 0.7 GitHub CLI のインストールと認証
+### 0.8 GitHub CLI のインストールと認証
 
 ワーク④でのPR作成やレビュー依頼に使います。インストール手順はWindows/Macで異なります。
 
@@ -104,9 +109,10 @@ brew install gh
 
 ```bash
 gh auth login
+gh auth setup-git
 ```
 
-### 0.8 uloopのセットアップ
+### 0.9 uloopのセットアップ
 
 Claude Code から Unity Editor を直接操作できるようにするためのセットアップです。Windows/Mac共通の手順です。
 
