@@ -18,7 +18,7 @@
 ## ファイル命名（推奨）
 
 ```
-<gpu-core>_<unity-version>.json   例: Mali-G715_6000.3.2f1.json
+<gpu-core>_<unity-version>.json   例: Mali-G715_6000.3.19f1.json
 ```
 
 > 初期ベースラインは malioc 実行環境（対象 GPU コア + Android Build Support）で生成する必要があるため、

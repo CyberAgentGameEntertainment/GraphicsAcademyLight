@@ -16,19 +16,7 @@
    cd GraphicsAcademyLight
    ```
 
-2. **Git LFSのインストール**
-   - [Git LFS公式サイト](https://git-lfs.github.com/) からインストールしてください。
-   - もしくは以下のコマンドでインストールできます（Homebrew例）:
-     ```bash
-     brew install git-lfs
-     ```
-   - Windowsの場合はインストーラーを利用してください。
-
-3. **Git LFSの初期化とファイル取得**
-   ```bash
-   git lfs install
-   git lfs pull
-   ```
+> このリポジトリに100MBを超えるファイルは含まれていないため、Git LFSは使用していません（通常の `git clone` のみで全ファイルを取得できます）。
 
 ### SiriusPackages ディレクトリについて
 

@@ -1,8 +1,116 @@
 # Graphics Academy Light
 
-こんにちは。サイバーエージェント ゲーム・エンターテイメント事業部、SGEコア技術本部（コアテク）のグラフィックスチームに所属している清原です。
+この講義では、SGEコア技術本部のグラフィックスチームが日々の開発で実際に取り入れている「AI駆動開発」という進め方をお伝えしていきます。
 
-このドキュメントでは、私たちグラフィックスチームが日々の開発で実際に取り入れている「AI駆動開発」という進め方をお伝えしていきます。
+## 0 セットアップ
+
+ワークショップ本編（4章）を始める前に、以下のセットアップを済ませておいてください。
+各ソフトウェアをインストールするためのコマンドは、WindowsはPowerShell、MacはTerminalを利用してください。
+
+### 0.1 Git のインストール
+
+**Windows**
+
+[Git for Windows](https://git-scm.com/download/win) からインストーラーをダウンロードして実行してください。
+
+**Mac**
+
+ターミナルで以下のいずれかを実行してください。
+
+```bash
+xcode-select --install   # Xcode Command Line Toolsに同梱のGitを使う場合
+# もしくは
+brew install git         # Homebrewで最新版を使う場合
+```
+
+インストール後、以下でバージョンを確認してください（Windows/Mac共通）。
+
+```bash
+git --version
+```
+
+### 0.2 Node.js のインストール
+
+Claude Code・uloop CLI のインストールに必要です。**LTS版**を使用してください。
+
+**Windows**
+
+```powershell
+winget install OpenJS.NodeJS.LTS
+```
+
+
+**Mac**
+
+```bash
+brew install node
+```
+
+
+### 0.3 Unity のインストール
+
+Windows/Mac共通の手順です（3.のBuild Supportモジュールの選択のみ異なります）。
+
+1. [Unity Hub](https://unity.com/download) をインストールします。
+2. Unity Hub から Unity **6000.3.19f1** をインストールします（一覧に無い場合は、Unity公式のアーカイブから同バージョンを検索してください）。
+3. インストール時のモジュール選択で、以下を追加でチェックしてください。
+   - **Windows**: Android Build Support
+   - **Mac**: iOS Build Support
+   > このプロジェクトのビジュアルリグレッションテストは、`Tools > Sirius > Dev Support > Validate Mobile Target` によって、Windows環境ではビルドターゲットが強制的に **Android** に、macOS環境では **iOS** に切り替えられます。対応する Build Support が無いとワーク②・③のテストが実行できません。
+
+### 0.4 リポジトリのクローン
+
+このリポジトリは、講義が始まると公開されます。講義開始の際にクローンの時間を取るので、事前準備ではスキップしてください。
+
+```bash
+git clone git@github.com:CyberAgentGameEntertainment/GraphicsAcademyLight.git
+cd GraphicsAcademyLight
+```
+
+
+### 0.5 Claude Code のインストールとログイン
+
+Windows/Mac共通です。
+
+```bash
+npm install -g @anthropic-ai/claude-code
+```
+
+
+### 0.6 GitHub CLI のインストールと認証
+
+ワーク④でのPR作成やレビュー依頼に使います。インストール手順はWindows/Macで異なります。
+
+**Windows**
+
+```powershell
+winget install --id GitHub.cli
+```
+
+**Mac**
+
+```bash
+brew install gh
+```
+
+インストール後、認証を行います（Windows/Mac共通）。
+
+```bash
+gh auth login
+```
+
+### 0.7 uloop（Unity操作ハーネス）のセットアップ
+
+Claude Code から Unity Editor を直接操作できるようにするためのセットアップです。Windows/Mac共通の手順です。
+
+1. ターミナル or PowerShellで`npm install -g uloop-cli` を実行
+2. `~/.claude/settings.json`（Windowsでは `C:\Users\<ユーザー名>\.claude\settings.json`）の `permissions.allow` に `"Bash(uloop *)"` を追加
+3. Unity Editor で **Window > uLoopMCP** を開き、Enable Tests Execution / Allow MenuItem Execution / Dynamic Code Security Level=FullAccess を有効化（`UserSettings/` 配下はgitignore対象のため各自設定が必要です）
+
+### 0.8 Mali Offline Compiler のインストール
+[Arm Developer](https://developer.arm.com/Tools%20and%20Software/Mali%20Offline%20Compiler) から、Mali Offline Compilerを含む **Arm Performance Studio** をダウンロード・インストールします。
+
+
 
 ## 1 ウォームアップ
 
@@ -570,5 +678,11 @@ AIから提示された確認事項を進めて、コミット->PR作成まで�
 
 ![alt text](figs/13.png)
 
+#### step-3 AIによるクロスレビューの体験
+作成されたPRには、次の図のようにCodexによるレビューとClaudeによるレビューの評価が追加されています。
+これを確認して、最終的に人間による対応の決定を行ってください。
+（※ 今回のPRはmainにマージはできません。）
+
+![alt text](figs/15.png)
 ---
 
