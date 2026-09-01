@@ -1,0 +1,11 @@
+{
+  "name": "jp.co.cyberagent.sirius.core.assets",
+  "displayName": "Sirius.Core.Assets",
+  "version": "2.0.0",
+  "unity": "6000.0",
+  "license": "MIT",
+  "author": {
+    "name": "CyberAgent"
+  },
+  "description": "Sirius Core\u306e\u30a2\u30bb\u30c3\u30c8\u30d1\u30c3\u30b1\u30fc\u30b8"
+}

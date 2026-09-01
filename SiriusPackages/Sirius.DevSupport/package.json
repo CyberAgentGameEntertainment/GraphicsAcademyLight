@@ -1,0 +1,16 @@
+{
+  "name": "jp.co.cyberagent.sirius.devsupport",
+  "displayName": "Sirius.DevSupport",
+  "version": "2.3.0",
+  "unity": "6000.0",
+  "license": "MIT",
+  "dependencies": {
+    "com.unity.inputsystem": "1.17.0",
+    "com.unity.render-pipelines.core": "17.0.0",
+    "com.unity.nuget.newtonsoft-json": "3.2.1"
+  },
+  "author": {
+    "name": "CyberAgent"
+  },
+  "description": "Siriusの開発支援パッケージ、他のSiriusパッケージへの依存はなく単体で利用できる。"
+}

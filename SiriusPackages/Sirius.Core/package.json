@@ -1,0 +1,14 @@
+{
+  "name": "jp.co.cyberagent.sirius.core",
+  "displayName": "Sirius.Core",
+  "version": "2.3.0",
+  "unity": "6000.0",
+  "license": "MIT",
+  "dependencies": {
+    "com.unity.render-pipelines.universal": "17.0.0"
+  },
+  "author": {
+    "name": "CyberAgent"
+  },
+  "description": "Siriusのコアパッケージ、他のSiriusパッケージに依存される（ワークショップ用縮小版）"
+}

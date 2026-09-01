@@ -1,0 +1,150 @@
+{
+  "SchemaVersion": 1,
+  "GpuCore": "Immortalis-G715",
+  "MaliocVersion": "Mali Offline Compiler v8.8.1 (Build 73b41e)\nCopyright (c) 2007-2025 Arm Limited. All rights reserved.",
+  "UnityVersion": "6000.3.2f1",
+  "Entries": [
+    {
+      "ShaderAssetPath": "Packages/jp.co.cyberagent.sirius.postprocessing/Runtime/Shaders/DirectionalBlur.shader",
+      "SubShaderIndex": 0,
+      "PassIndex": 0,
+      "ShaderTypeName": "Fragment",
+      "Metrics": {
+        "WorkRegisters": 13.0,
+        "UniformRegisters": 12.0,
+        "ThreadOccupancy": 100.0,
+        "Fp16ArithPercentage": 62.0,
+        "TotalCyclesByPipeline": {
+          "arith_total": 0.1328125,
+          "arith_fma": 0.125,
+          "arith_cvt": 0.015625,
+          "arith_sfu": 0.0,
+          "load_store": 0.0,
+          "varying": 0.0625,
+          "texture": 0.625
+        },
+        "BoundPipelines": [
+          "texture"
+        ]
+      }
+    },
+    {
+      "ShaderAssetPath": "Packages/jp.co.cyberagent.sirius.postprocessing/Runtime/Shaders/DirectionalBlur.shader",
+      "SubShaderIndex": 0,
+      "PassIndex": 0,
+      "ShaderTypeName": "Vertex",
+      "Metrics": {
+        "WorkRegisters": 13.0,
+        "UniformRegisters": 18.0,
+        "ThreadOccupancy": 100.0,
+        "Fp16ArithPercentage": 0.0,
+        "TotalCyclesByPipeline": {
+          "arith_total": 0.234375,
+          "arith_fma": 0.1015625,
+          "arith_cvt": 0.21875,
+          "arith_sfu": 0.0625,
+          "load_store": 2.0,
+          "texture": 0.0
+        },
+        "BoundPipelines": [
+          "load_store"
+        ]
+      }
+    },
+    {
+      "ShaderAssetPath": "Packages/jp.co.cyberagent.sirius.postprocessing/Runtime/Shaders/RadialBlur.shader",
+      "SubShaderIndex": 0,
+      "PassIndex": 0,
+      "ShaderTypeName": "Fragment",
+      "Metrics": {
+        "WorkRegisters": 27.0,
+        "UniformRegisters": 20.0,
+        "ThreadOccupancy": 100.0,
+        "Fp16ArithPercentage": 2.0,
+        "TotalCyclesByPipeline": {
+          "arith_total": 0.5390625,
+          "arith_fma": 0.46875,
+          "arith_cvt": 0.0625,
+          "arith_sfu": 0.3125,
+          "load_store": 0.0,
+          "varying": 0.0625,
+          "texture": 1.0
+        },
+        "BoundPipelines": [
+          "texture"
+        ]
+      }
+    },
+    {
+      "ShaderAssetPath": "Packages/jp.co.cyberagent.sirius.postprocessing/Runtime/Shaders/RadialBlur.shader",
+      "SubShaderIndex": 0,
+      "PassIndex": 0,
+      "ShaderTypeName": "Vertex",
+      "Metrics": {
+        "WorkRegisters": 13.0,
+        "UniformRegisters": 18.0,
+        "ThreadOccupancy": 100.0,
+        "Fp16ArithPercentage": 0.0,
+        "TotalCyclesByPipeline": {
+          "arith_total": 0.234375,
+          "arith_fma": 0.1015625,
+          "arith_cvt": 0.21875,
+          "arith_sfu": 0.0625,
+          "load_store": 2.0,
+          "texture": 0.0
+        },
+        "BoundPipelines": [
+          "load_store"
+        ]
+      }
+    },
+    {
+      "ShaderAssetPath": "Packages/jp.co.cyberagent.sirius.postprocessing/Runtime/Shaders/RotationBlur.shader",
+      "SubShaderIndex": 0,
+      "PassIndex": 0,
+      "ShaderTypeName": "Fragment",
+      "Metrics": {
+        "WorkRegisters": 3.0,
+        "UniformRegisters": 0.0,
+        "ThreadOccupancy": 100.0,
+        "Fp16ArithPercentage": null,
+        "TotalCyclesByPipeline": {
+          "arith_total": 0.046875,
+          "arith_fma": 0.0,
+          "arith_cvt": 0.046875,
+          "arith_sfu": 0.0,
+          "load_store": 0.0,
+          "varying": 0.0,
+          "texture": 0.0
+        },
+        "BoundPipelines": [
+          "arith_total",
+          "arith_cvt"
+        ]
+      }
+    },
+    {
+      "ShaderAssetPath": "Packages/jp.co.cyberagent.sirius.postprocessing/Runtime/Shaders/RotationBlur.shader",
+      "SubShaderIndex": 0,
+      "PassIndex": 0,
+      "ShaderTypeName": "Vertex",
+      "Metrics": {
+        "WorkRegisters": 13.0,
+        "UniformRegisters": 18.0,
+        "ThreadOccupancy": 100.0,
+        "Fp16ArithPercentage": 0.0,
+        "TotalCyclesByPipeline": {
+          "arith_total": 0.234375,
+          "arith_fma": 0.1015625,
+          "arith_cvt": 0.21875,
+          "arith_sfu": 0.0625,
+          "load_store": 2.0,
+          "texture": 0.0
+        },
+        "BoundPipelines": [
+          "load_store"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 53
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b1ca57e420ca8a4f8224ba6a17465af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Sirius.Core.Editor::Sirius.Core.VAT.Editor.VATMetaImporterSettings
+  defaultPositionTextureProperty: _posTexture
+  defaultPositionTexture2Property: _posTexture2
+  defaultRotationTextureProperty: _rotTexture
+  defaultColorTextureProperty: _colTexture
+  defaultSpareColTextureProperty: _spareColTexture
+  defaultLookupTextureProperty: _lookupTexture
+  enableAutoImport: 1
+  defaultHdrTexturePreset: {fileID: 2655988077585873504, guid: d90769be632204fc1bb4174605117b01, type: 2}
+  defaultLdrTexturePreset: {fileID: 2655988077585873504, guid: 35b3c0c335308477fac42f76e0995d8e, type: 2}
+  defaultFbxPreset: {fileID: 2655988077585873504, guid: 98a0e2842af6f4eeda0167825f8bb4f9, type: 2}

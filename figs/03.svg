@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 320" font-family="'Hiragino Sans','Yu Gothic UI','Noto Sans JP','Meiryo',sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowDown" markerWidth="9" markerHeight="9" refX="4.5" refY="7" orient="auto">
+      <path d="M0,0 L9,0 L4.5,9 Z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="900" height="320" rx="14" fill="#f8fafc"/>
+
+  <!-- ===== Phase cards ===== -->
+  <!-- Phase 1 -->
+  <g>
+    <rect x="25" y="55" width="190" height="95" rx="12" fill="#ffffff" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="120" y="78" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="1.5" fill="#3b82f6">PHASE 1</text>
+    <text x="120" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Intent</text>
+    <text x="120" y="131" text-anchor="middle" font-size="13" fill="#64748b">何を / なぜ</text>
+  </g>
+  <!-- Phase 2 -->
+  <g>
+    <rect x="245" y="55" width="190" height="95" rx="12" fill="#ffffff" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="340" y="78" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="1.5" fill="#8b5cf6">PHASE 2</text>
+    <text x="340" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Inception</text>
+    <text x="340" y="131" text-anchor="middle" font-size="13" fill="#64748b">どう作る</text>
+  </g>
+  <!-- Phase 3 -->
+  <g>
+    <rect x="465" y="55" width="190" height="95" rx="12" fill="#ffffff" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="560" y="78" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="1.5" fill="#d97706">PHASE 3</text>
+    <text x="560" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Construction</text>
+    <text x="560" y="131" text-anchor="middle" font-size="13" fill="#64748b">実装</text>
+  </g>
+  <!-- Phase 4 -->
+  <g>
+    <rect x="685" y="55" width="190" height="95" rx="12" fill="#ffffff" stroke="#10b981" stroke-width="1.5"/>
+    <text x="780" y="78" text-anchor="middle" font-size="11" font-weight="700" letter-spacing="1.5" fill="#059669">PHASE 4</text>
+    <text x="780" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="#1f2937">Review</text>
+    <text x="780" y="131" text-anchor="middle" font-size="13" fill="#64748b">レビュー</text>
+  </g>
+
+  <!-- ===== horizontal arrows between phases ===== -->
+  <line x1="217" y1="102" x2="241" y2="102" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="437" y1="102" x2="461" y2="102" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="657" y1="102" x2="681" y2="102" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ===== down arrows to artifacts ===== -->
+  <line x1="120" y1="152" x2="120" y2="174" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+  <line x1="340" y1="152" x2="340" y2="174" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+  <line x1="560" y1="152" x2="560" y2="174" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+  <line x1="780" y1="152" x2="780" y2="174" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowDown)"/>
+
+  <!-- ===== artifact pills ===== -->
+  <g font-size="13" font-weight="600">
+    <rect x="45" y="178" width="150" height="34" rx="17" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="120" y="200" text-anchor="middle" fill="#1d4ed8" font-family="'SFMono-Regular','Consolas',monospace">intent.md</text>
+
+    <rect x="265" y="178" width="150" height="34" rx="17" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="340" y="200" text-anchor="middle" fill="#6d28d9" font-family="'SFMono-Regular','Consolas',monospace">plan.md</text>
+
+    <rect x="485" y="178" width="150" height="34" rx="17" fill="#fffbeb" stroke="#fde68a"/>
+    <text x="560" y="200" text-anchor="middle" fill="#b45309">コード + PR</text>
+
+    <rect x="705" y="178" width="150" height="34" rx="17" fill="#ecfdf5" stroke="#a7f3d0"/>
+    <text x="780" y="200" text-anchor="middle" fill="#047857">レビュー / GitHub</text>
+  </g>
+
+  <!-- ===== connectors into bucket ===== -->
+  <line x1="120" y1="212" x2="120" y2="256" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="340" y1="212" x2="340" y2="256" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="560" y1="212" x2="560" y2="256" stroke="#cbd5e1" stroke-width="2"/>
+  <line x1="780" y1="212" x2="780" y2="256" stroke="#cbd5e1" stroke-width="2"/>
+
+  <!-- ===== shared bucket ===== -->
+  <rect x="25" y="256" width="850" height="44" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="450" y="283" text-anchor="middle" font-size="15" font-weight="600" fill="#4338ca" font-family="'SFMono-Regular','Consolas',monospace">docs/ai-dlc/&lt;date&gt;-&lt;topic-slug&gt;/</text>
+</svg>

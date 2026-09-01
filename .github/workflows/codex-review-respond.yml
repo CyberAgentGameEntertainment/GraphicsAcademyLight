@@ -1,0 +1,245 @@
+name: Codex Review Auto Respond
+
+# OpenAI Codex（ChatGPT の GitHub 連携 = chatgpt-codex-connector[bot]）の自動コードレビューが
+# 付いた PR に対し、Claude が各指摘への対応案（```suggestion / 手動差分 / 見送り理由）を
+# レビュースレッドへ返信するワークフロー。
+# (SIRIUS本体の同名ワークフローを参考に移植。設計の核は変えていない)
+#
+# 設計の核:
+#   - 起点は Codex のレビュー submit（人間レビューは対象外）。
+#   - このワークフローは checkout も git push も一切持たない。修正の PR ブランチ反映は
+#     人間が GitHub 標準の「Commit suggestion」を押すことでのみ行われる（承認ゲート）。
+#     → no-push は permissions ではなく「push ステップが存在しない」構造で担保する。
+#   - Codex レビューが無い / 既に返信済みの PR では Claude を呼ばず正常終了（冪等・無駄なし）。
+#
+# 前提 (このリポジトリで別途手動セットアップが必要):
+#   1. OpenAI Codex の GitHub App (chatgpt-codex-connector) をこのリポジトリに
+#      インストール・有効化しておくこと (https://github.com/apps/chatgpt-codex-connector)
+#   2. リポジトリ Secrets に CLAUDE_CODE_OAUTH_TOKEN (`claude setup-token` で発行) を設定しておくこと
+#
+# SIRIUS本体との差分:
+#   - SIRIUSはコメント投稿にGitHub App (APP_ID/PRIVATE_KEY) のトークンを使っているが、
+#     このリポジトリには同等のApp基盤が無いため、既定のGITHUB_TOKENを使う
+#     (pull-requests: write権限のみで動作する。ボットのコメント表示名が github-actions[bot] になる点のみ差異)
+
+on:
+  pull_request_review:
+    types: [submitted]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'ドライラン対象の PR 番号'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: write
+
+# 同一 PR への並列実行を直列化（Codex が短時間に複数レビューを submit するケース）。
+concurrency:
+  group: codex-respond-${{ github.event.pull_request.number || github.event.inputs.pr_number }}
+  cancel-in-progress: false
+
+jobs:
+  respond:
+    # 手動ドライラン、または Codex bot が open / 非 fork PR にレビューを submit したときのみ起動。
+    # login は `chatgpt-codex-connector[bot]` 固定だが、表記揺れ耐性のため含有判定にする。
+    # 人間レビュー（user.type != Bot）はここで弾く。
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      ( github.event.review.user.type == 'Bot' &&
+        contains(github.event.review.user.login, 'codex-connector') &&
+        github.event.pull_request.state == 'open' &&
+        github.event.pull_request.head.repo.full_name == github.event.pull_request.base.repo.full_name )
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Resolve and validate PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_PR: ${{ github.event.inputs.pr_number }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            pr="$DISPATCH_PR"
+          else
+            pr="$EVENT_PR"
+          fi
+
+          pr_json=$(gh api "repos/${REPO}/pulls/${pr}")
+          state=$(echo "$pr_json" | jq -r '.state')
+          is_fork=$(echo "$pr_json" | jq -r '.head.repo.full_name != .base.repo.full_name')
+
+          if [ "$state" != "open" ]; then
+            echo "ℹ️ PR #${pr} は open ではないためスキップ (state: $state)"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$is_fork" = "true" ]; then
+            echo "ℹ️ fork からの PR のためスキップ"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+          echo "pr_number=${pr}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Node.js
+        if: steps.pr.outputs.skip == 'false'
+        uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+
+      - name: Extract Codex review items
+        id: extract
+        if: steps.pr.outputs.skip == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/codex-respond
+
+          # 全インラインレビューコメント（ページ結合）
+          comments_json=$(gh api --paginate --slurp "repos/${REPO}/pulls/${PR_NUMBER}/comments?per_page=100" | jq 'add')
+
+          # 既に当ワークフローが返信済みの Codex コメント id 集合（冪等マーカーで判定）
+          answered=$(echo "$comments_json" | jq '[ .[] | select(.body != null and (.body | contains("<!-- claude-codex-respond:"))) | .in_reply_to_id ] | unique')
+
+          # Codex bot の未返信トップレベルコメントを抽出
+          candidates=$(echo "$comments_json" | jq --argjson answered "$answered" '
+            [ .[]
+              | select(.in_reply_to_id == null)
+              | select(.user.type == "Bot")
+              | select(.user.login | ascii_downcase | contains("codex-connector"))
+              | select( (.id as $id | $answered | index($id)) | not )
+              | { comment_id: .id, path: .path, line: .line, start_line: .start_line, diff_hunk: .diff_hunk, body: .body }
+            ]')
+          ccount=$(echo "$candidates" | jq 'length')
+
+          # Codex の最新レビュー総評（行アンカー無し）
+          reviews_json=$(gh api --paginate --slurp "repos/${REPO}/pulls/${PR_NUMBER}/reviews?per_page=100" | jq 'add')
+          latest=$(echo "$reviews_json" | jq '[ .[] | select(.user.type == "Bot") | select(.user.login | ascii_downcase | contains("codex-connector")) ] | sort_by(.submitted_at) | last // {}')
+          review_id=$(echo "$latest" | jq -r '.id // empty')
+          summary=$(echo "$latest" | jq -r '.body // ""')
+
+          # Codex のレビュー body は指摘が無くても定型ボイラープレート（"### 💡 Codex Review"
+          # ヘッダ + About の <details> 折りたたみ）を常に含む。定型部分を除去して実質的な内容が
+          # 残らなければ総評対応をスキップする（毎レビューの無意味な overview コメント + LLM 呼び出しを防ぐ）。
+          if [ -n "$summary" ]; then
+            summary=$(echo "$summary" \
+              | sed '/<details>/,/<\/details>/d' \
+              | { grep -v -E '^### .*Codex Review|^Here are some automated review suggestions|^\*\*Reviewed commit:\*\*' || true; })
+            if [ -z "$(echo "$summary" | tr -d '[:space:]')" ]; then
+              summary=""
+            fi
+          fi
+
+          # 総評の冪等チェック: 同じ review_id の overview を既に投稿済みなら summary を空に
+          if [ -n "$review_id" ] && [ -n "$summary" ]; then
+            issue_comments=$(gh api --paginate --slurp "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" | jq 'add')
+            posted=$(echo "$issue_comments" | jq --arg m "<!-- claude-codex-respond:overview:${review_id} -->" 'any(.[]; .body != null and (.body | contains($m)))')
+            if [ "$posted" = "true" ]; then
+              summary=""
+            fi
+          fi
+
+          jq -n --argjson comments "$candidates" --arg summary "$summary" \
+            '{ comments: $comments, review_summary: $summary }' > /tmp/codex-respond/input.json
+
+          have_work=false
+          if [ "$ccount" -gt 0 ] || [ -n "$summary" ]; then
+            have_work=true
+          fi
+          echo "have_work=${have_work}" >> "$GITHUB_OUTPUT"
+          echo "review_id=${review_id}" >> "$GITHUB_OUTPUT"
+          echo "📋 Codex 未返信指摘: ${ccount} 件 / 総評対応: $( [ -n "$summary" ] && echo あり || echo なし )"
+
+      # Claude Code CLI をサブスク OAuth トークンで認証して使う。
+      # トークンは `claude setup-token`（要 Claude サブスク）で発行した長期トークンを
+      # secrets.CLAUDE_CODE_OAUTH_TOKEN に登録する。CLI は同名 env から自動認証するため
+      # 別途のログインステップは不要。従量課金の ANTHROPIC_API_KEY は使わない。
+      - name: Install Claude Code
+        if: steps.pr.outputs.skip == 'false' && steps.extract.outputs.have_work == 'true'
+        run: npm install -g @anthropic-ai/claude-code@2.1.153
+
+      - name: Generate responses (Claude Code CLI)
+        id: respond
+        if: steps.pr.outputs.skip == 'false' && steps.extract.outputs.have_work == 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          # 実行中の workflow と同一 commit。PR head ではなくこれを使うことで、
+          # PR 側で改変されたスクリプトを実行してしまうのを防ぐ。
+          SCRIPT_SHA: ${{ github.workflow_sha }}
+        run: |
+          set -euo pipefail
+          # このワークフローは checkout を持たない（no-push 構造保証）。対応スクリプトは
+          # ワークスペースに存在しないため、workflow と同一 commit から取得して /tmp で実行する。
+          gh api "repos/${REPO}/contents/.github/scripts/codex-respond.mjs?ref=${SCRIPT_SHA}" \
+            --jq '.content' | base64 -d > /tmp/codex-respond/codex-respond.mjs
+          node /tmp/codex-respond/codex-respond.mjs --input-file /tmp/codex-respond/input.json > /tmp/codex-respond/result.json
+          echo "----- result.json (本文は冪等マーカー無し) -----"
+          jq '{ replies: [.replies[] | { comment_id, action }], overview: (.overview != null), errors }' /tmp/codex-respond/result.json
+          echo "------------------------------------------------"
+
+      - name: Post replies to Codex threads
+        if: steps.pr.outputs.skip == 'false' && steps.extract.outputs.have_work == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
+          REVIEW_ID: ${{ steps.extract.outputs.review_id }}
+        run: |
+          set -euo pipefail
+          result=/tmp/codex-respond/result.json
+
+          posted=0
+          for row in $(jq -r '.replies[] | @base64' "$result"); do
+            reply=$(echo "$row" | base64 -d)
+            comment_id=$(echo "$reply" | jq -r '.comment_id')
+            action=$(echo "$reply" | jq -r '.action')
+            body=$(echo "$reply" | jq -r '.body')
+
+            # 冪等マーカーを付与（次回実行時の二重返信防止 / 抽出段でも除外済み）
+            marker="<!-- claude-codex-respond:${comment_id} -->"
+            full_body=$(printf '%s\n\n%s' "$body" "$marker")
+
+            payload=$(jq -n --arg body "$full_body" '{ body: $body }')
+            if gh api -X POST "repos/${REPO}/pulls/${PR_NUMBER}/comments/${comment_id}/replies" --input - <<<"$payload" >/dev/null; then
+              echo "✅ comment #${comment_id} へ返信 (action=${action})"
+              posted=$((posted + 1))
+            else
+              echo "::warning::comment #${comment_id} への返信 post に失敗"
+            fi
+          done
+
+          # レビュー総評への対応方針（行アンカー無し → PR 全体コメント）
+          overview=$(jq -r '.overview // empty' "$result")
+          if [ -n "$overview" ] && [ -n "$REVIEW_ID" ]; then
+            marker="<!-- claude-codex-respond:overview:${REVIEW_ID} -->"
+            full_body=$(printf '%s\n\n%s' "$overview" "$marker")
+            payload=$(jq -n --arg body "$full_body" '{ body: $body }')
+            if gh api -X POST "repos/${REPO}/issues/${PR_NUMBER}/comments" --input - <<<"$payload" >/dev/null; then
+              echo "✅ レビュー総評への対応方針を PR コメントに投稿"
+            else
+              echo "::warning::総評コメントの post に失敗"
+            fi
+          fi
+
+          # 未対応（API エラー等）を可視化
+          errors=$(jq -r '.errors | length' "$result")
+          if [ "$errors" -gt 0 ]; then
+            echo "::warning::${errors} 件の指摘は解析に失敗したため未対応です（再実行で再試行されます）"
+            jq -r '.errors[] | "  - comment #\(.comment_id): \(.message)"' "$result"
+          fi
+
+          echo ""
+          echo "📊 結果サマリー: 返信 ${posted} 件 / 未対応 ${errors} 件"

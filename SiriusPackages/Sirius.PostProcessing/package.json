@@ -1,0 +1,14 @@
+{
+  "name": "jp.co.cyberagent.sirius.postprocessing",
+  "displayName": "Sirius.PostProcessing",
+  "version": "2.3.0",
+  "unity": "6000.0",
+  "license": "MIT",
+  "dependencies": {
+    "jp.co.cyberagent.sirius.core.assets": "2.0.0"
+  },
+  "author": {
+    "name": "CyberAgent"
+  },
+  "description": "Siriusのポストプロセッシング周りのパッケージ（ワークショップ用縮小版）"
+}
