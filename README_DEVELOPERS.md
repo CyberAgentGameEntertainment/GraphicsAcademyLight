@@ -129,12 +129,12 @@ SIRIUSプロジェクトでは [uloop CLI](https://github.com/hatayama/uloop) �
 #### 1. uloop CLI のグローバルインストール
 
 ```bash
-npm install -g uloop-cli
+npm install -g uloop-cli@2.1.10
 ```
 
 uloop スキルはリポジトリの `.claude/skills/uloop-*/` にコミット済みのため、追加インストールは不要です。
 
-> **Note:** CLI (`uloop-cli`) と Unity パッケージ (`io.github.hatayama.uloopmcp`) は**メジャーバージョンを揃える**必要があります。`Packages/manifest.json` の `uloopmcp` を更新した際は、各自 `uloop update` で CLI も合わせて更新してください。
+> **Note:** CLI (`uloop-cli`) と Unity パッケージ (`io.github.hatayama.uloopmcp`) は**バージョンを揃える**必要があります（本プロジェクトは `Packages/manifest.json` で `2.1.10` に固定）。`manifest.json` の `uloopmcp` を更新した際は、`npm install -g uloop-cli@<バージョン>` で CLI も合わせて更新してください。
 
 #### 2. Claude Code のユーザーグローバル設定
 
