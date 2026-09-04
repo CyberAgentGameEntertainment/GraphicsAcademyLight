@@ -80,7 +80,7 @@ Claude Code から Unity Editor を直接操作できるようにするための
 
 以下の1〜2は事前準備として進めておいてください。3〜4は0.5でリポジトリをクローンした後（講義当日）に行います。
 
-1. ターミナル or PowerShellで`npm install -g uloop-cli` を実行
+1. ターミナル or PowerShellで`npm install -g uloop-cli@2.1.10` を実行
 2. `~/.claude/settings.json`（Windowsでは `C:\Users\<ユーザー名>\.claude\settings.json`）の `permissions.allow` に `"Bash(uloop *)"` を追加
 3. 0.5でクローンしたプロジェクトをUnity Editorで開きます。メニューに **Window > Unity CLI Loop** が表示されていれば導入は完了です。
 4. Unity Editor で **Window > Unity CLI Loop > Settings** を開き、以下を有効化します。
