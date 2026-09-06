@@ -39,12 +39,11 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Features.Passes
             _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionSpeed, heatDistortionVolume.Speed);
             _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionChromaticSeparation, heatDistortionVolume.ChromaticSeparation);
             _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionNoiseScale, heatDistortionVolume.NoiseScale);
-            // NoiseTextureはnullableなTexture2DArrayのため、未設定時はSetTextureを呼ばずシェーダー側のデフォルト値に委ねる
-            // (Texture2D.whiteTextureのような次元の異なるフォールバックを渡すと次元不一致になるため)
-            if (heatDistortionVolume.NoiseTexture != null)
-            {
-                _postProcessMaterial.SetTexture(ShaderPropertyIDs.HeatDistortionNoiseTex, heatDistortionVolume.NoiseTexture);
-            }
+            // NoiseTextureがnullのときもバインドを更新する。マテリアルはパスで使い回すため、
+            // 分岐でSetTextureを飛ばすと以前のTexture2DArrayが残り、Volumeの現在値とバインドがズレる。
+            // nullを渡した場合は次元の一致するシェーダー側デフォルトへフォールバックする
+            // (Texture2D.whiteTextureのような次元の異なるフォールバックを明示的に渡してはならない)
+            _postProcessMaterial.SetTexture(ShaderPropertyIDs.HeatDistortionNoiseTex, heatDistortionVolume.NoiseTexture);
         }
 
         public void Cleanup()
