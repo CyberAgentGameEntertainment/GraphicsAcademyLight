@@ -102,9 +102,9 @@ Shader "Hidden/Sirius/HeatDistortion"
                 const half2 offsetG = noiseG * strength * aspectCorrection;
                 const half2 offsetB = noiseB * strength * aspectCorrection;
 
-                const half1 colorR = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv + offsetR).r;
-                const half1 colorG = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv + offsetG).g;
-                const half1 colorB = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv + offsetB).b;
+                const half colorR = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv + offsetR).r;
+                const half colorG = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv + offsetG).g;
+                const half colorB = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv + offsetB).b;
                 const half4 color = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, uv);
 
                 // 合成係数: 距離フェードを「オフセット量」だけでなく「合成側」でも効かせる。
