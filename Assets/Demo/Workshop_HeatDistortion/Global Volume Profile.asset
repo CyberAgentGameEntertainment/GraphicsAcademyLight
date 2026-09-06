@@ -50,6 +50,53 @@ MonoBehaviour:
     <fieldHash>k__BackingField: 218281240
     m_OverrideState: 0
     m_Value: 1.7
+--- !u!114 &-2917405184620356695
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19a67b886d9240d43bab0e4aee471186, type: 3}
+  m_Name: HeatDistortionVolume
+  m_EditorClassIdentifier: Sirius.PostProcessing.Runtime::Sirius.PostProcessing.Runtime.Scripts.Volumes.HeatDistortionVolume
+  active: 1
+  _intensity:
+    m_OverrideState: 1
+    m_Value: 2
+  _blend:
+    m_OverrideState: 1
+    m_Value: 0.5
+  _startDistance:
+    m_OverrideState: 1
+    m_Value: 20
+  _fadeDistance:
+    m_OverrideState: 1
+    m_Value: 150
+  _speed:
+    m_OverrideState: 1
+    m_Value: 0.2
+  _chromaticSeparation:
+    m_OverrideState: 1
+    m_Value: 0.2
+  _zenithMask:
+    m_OverrideState: 1
+    m_Value: 0
+  _horizonMask:
+    m_OverrideState: 1
+    m_Value: 0
+  _horizonExponent:
+    m_OverrideState: 1
+    m_Value: 3
+  _noiseScale:
+    m_OverrideState: 1
+    m_Value: 2
+  _noiseTexture:
+    m_OverrideState: 1
+    m_Value: {fileID: 18700000, guid: f3f8592ee4a4db144887fb9fe80683b8, type: 3}
+    dimension: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,4 +109,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
   m_Name: Global Volume Profile
   m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.VolumeProfile
-  components: []
+  components:
+  - {fileID: -2917405184620356695}

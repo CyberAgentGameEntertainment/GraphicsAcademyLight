@@ -15,6 +15,7 @@ MonoBehaviour:
   m_Active: 1
   allowRadialBlurPostProcess: 1
   allowDirectionalBlurPostProcess: 1
+  allowHeatDistortionPostProcess: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
