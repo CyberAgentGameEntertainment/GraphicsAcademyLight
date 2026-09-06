@@ -26,6 +26,7 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Features
     {
         [SerializeField] private bool allowRadialBlurPostProcess;
         [SerializeField] private bool allowDirectionalBlurPostProcess;
+        [SerializeField] private bool allowHeatDistortionPostProcess;
 
         [AllowFlag("allowDirectionalBlurPostProcess")]
         private DirectionalBlurRenderPass _directionalBlurRenderPass;
@@ -33,10 +34,14 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Features
         [AllowFlag("allowRadialBlurPostProcess")]
         private RadialBlurRenderPass _radialBlurRenderPass;
 
+        [AllowFlag("allowHeatDistortionPostProcess")]
+        private HeatDistortionRenderPass _heatDistortionRenderPass;
+
         public override void Create()
         {
             _radialBlurRenderPass = new RadialBlurRenderPass();
             _directionalBlurRenderPass = new DirectionalBlurRenderPass();
+            _heatDistortionRenderPass = new HeatDistortionRenderPass();
         }
 
         public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -66,12 +71,20 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Features
                 _directionalBlurRenderPass.renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
                 renderer.EnqueuePass(_directionalBlurRenderPass);
             }
+
+            // HeatDistortion
+            if (allowHeatDistortionPostProcess)
+            {
+                _heatDistortionRenderPass.renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;
+                renderer.EnqueuePass(_heatDistortionRenderPass);
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
             _directionalBlurRenderPass.Cleanup();
             _radialBlurRenderPass.Cleanup();
+            _heatDistortionRenderPass.Cleanup();
         }
     }
 }
