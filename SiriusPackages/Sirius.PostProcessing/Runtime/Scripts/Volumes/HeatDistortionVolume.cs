@@ -18,12 +18,6 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Volumes
         private ClampedFloatParameter _speed = new(0.1369f, 0.0f, 5.0f);
         [SerializeField, Tooltip("色収差の強さ")]
         private ClampedFloatParameter _chromaticSeparation = new(0.5f, 0.0f, 1.0f);
-        [SerializeField, Tooltip("天頂方向をマスクするかどうか")]
-        private BoolParameter _zenithMask = new(false);
-        [SerializeField, Tooltip("水平線方向をマスクするかどうか")]
-        private BoolParameter _horizonMask = new(true);
-        [SerializeField, Tooltip("水平線/天頂マスクの減衰カーブ")]
-        private ClampedFloatParameter _horizonExponent = new(2.5f, 0.1f, 10.0f);
         [SerializeField, Tooltip("揺らぎノイズの座標スケール")]
         private ClampedFloatParameter _noiseScale = new(1.7f, 0.0f, 10.0f);
         [SerializeField, Tooltip("揺らぎパターン生成用の3Dノイズテクスチャ(Texture2DArray)")]
@@ -63,24 +57,6 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Volumes
         {
             get => _chromaticSeparation.value;
             set => _chromaticSeparation.value = value;
-        }
-
-        public bool ZenithMask
-        {
-            get => _zenithMask.value;
-            set => _zenithMask.value = value;
-        }
-
-        public bool HorizonMask
-        {
-            get => _horizonMask.value;
-            set => _horizonMask.value = value;
-        }
-
-        public float HorizonExponent
-        {
-            get => _horizonExponent.value;
-            set => _horizonExponent.value = value;
         }
 
         public float NoiseScale

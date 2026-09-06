@@ -8,9 +8,6 @@ Shader "Hidden/Sirius/HeatDistortion"
         _HeatDistortionFadeDistance("Fade Distance", Float) = 150.0
         _HeatDistortionSpeed("Speed", Float) = 0.1369
         _HeatDistortionChromaticSeparation("Chromatic Separation", Float) = 0.5
-        _HeatDistortionZenithMask("Zenith Mask", Float) = 0
-        _HeatDistortionHorizonMask("Horizon Mask", Float) = 1
-        _HeatDistortionHorizonExponent("Horizon Exponent", Float) = 2.5
         _HeatDistortionNoiseScale("Noise Scale", Float) = 1.7
         _HeatDistortionNoiseTex("Noise Texture (Texture2DArray)", 2DArray) = "" {}
     }
@@ -45,9 +42,6 @@ Shader "Hidden/Sirius/HeatDistortion"
             uniform half _HeatDistortionFadeDistance;
             uniform half _HeatDistortionSpeed;
             uniform half _HeatDistortionChromaticSeparation;
-            uniform half _HeatDistortionZenithMask;
-            uniform half _HeatDistortionHorizonMask;
-            uniform half _HeatDistortionHorizonExponent;
             uniform half _HeatDistortionNoiseScale;
 
             TEXTURE2D_ARRAY(_HeatDistortionNoiseTex);
@@ -91,20 +85,7 @@ Shader "Hidden/Sirius/HeatDistortion"
                 const half2 noiseUV = uv * noiseAspect * _HeatDistortionNoiseScale;
                 const half sliceT = frac(_Time.y * _HeatDistortionSpeed);
 
-                // 水平線/天頂マスク: 視線の上下方向成分から重みを計算
-                const half3 viewDir = normalize(GetCameraVector(uv));
-                const half verticalDot = saturate(abs(viewDir.y));
-                half angleMask = 1.0h;
-                if (_HeatDistortionHorizonMask > 0.5h)
-                {
-                    angleMask *= pow(saturate(1.0h - verticalDot), _HeatDistortionHorizonExponent);
-                }
-                if (_HeatDistortionZenithMask > 0.5h)
-                {
-                    angleMask *= pow(verticalDot, _HeatDistortionHorizonExponent);
-                }
-
-                const half strength = _HeatDistortionIntensity * distanceMask * angleMask * HEAT_DISTORTION_UV_OFFSET_SCALE;
+                const half strength = _HeatDistortionIntensity * distanceMask * HEAT_DISTORTION_UV_OFFSET_SCALE;
                 // アスペクト比補正(非正方形画面でも歪みが円形に見えるようにする)
                 const half2 aspectCorrection = half2(_ScreenParams.y * rcp(_ScreenParams.x), 1.0h);
                 // 色収差: R/G/Bそれぞれに独立したノイズをサンプルし、チャンネルごとに別のオフセットを作る。
@@ -128,7 +109,6 @@ Shader "Hidden/Sirius/HeatDistortion"
 
                 // 合成係数: 距離フェードを「オフセット量」だけでなく「合成側」でも効かせる。
                 // Blendは Volume から与える手動の合成率で、0なら元画像をそのまま返す
-                // (angleMaskはstrength側に留める。HorizonExponentが最大10のため二重掛けすると過剰に潰れる)
                 const half t = saturate(distanceMask * _HeatDistortionBlend);
 
                 return lerp(color, half4(colorR, colorG, colorB, color.a), t);

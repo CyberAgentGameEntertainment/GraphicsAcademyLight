@@ -38,9 +38,6 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Features.Passes
             _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionFadeDistance, heatDistortionVolume.FadeDistance);
             _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionSpeed, heatDistortionVolume.Speed);
             _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionChromaticSeparation, heatDistortionVolume.ChromaticSeparation);
-            _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionZenithMask, heatDistortionVolume.ZenithMask ? 1.0f : 0.0f);
-            _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionHorizonMask, heatDistortionVolume.HorizonMask ? 1.0f : 0.0f);
-            _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionHorizonExponent, heatDistortionVolume.HorizonExponent);
             _postProcessMaterial.SetFloat(ShaderPropertyIDs.HeatDistortionNoiseScale, heatDistortionVolume.NoiseScale);
             // NoiseTextureはnullableなTexture2DArrayのため、未設定時はSetTextureを呼ばずシェーダー側のデフォルト値に委ねる
             // (Texture2D.whiteTextureのような次元の異なるフォールバックを渡すと次元不一致になるため)
@@ -67,9 +64,6 @@ namespace Sirius.PostProcessing.Runtime.Scripts.Features.Passes
             public static readonly int HeatDistortionFadeDistance = Shader.PropertyToID("_HeatDistortionFadeDistance");
             public static readonly int HeatDistortionSpeed = Shader.PropertyToID("_HeatDistortionSpeed");
             public static readonly int HeatDistortionChromaticSeparation = Shader.PropertyToID("_HeatDistortionChromaticSeparation");
-            public static readonly int HeatDistortionZenithMask = Shader.PropertyToID("_HeatDistortionZenithMask");
-            public static readonly int HeatDistortionHorizonMask = Shader.PropertyToID("_HeatDistortionHorizonMask");
-            public static readonly int HeatDistortionHorizonExponent = Shader.PropertyToID("_HeatDistortionHorizonExponent");
             public static readonly int HeatDistortionNoiseScale = Shader.PropertyToID("_HeatDistortionNoiseScale");
             public static readonly int HeatDistortionNoiseTex = Shader.PropertyToID("_HeatDistortionNoiseTex");
         }
